@@ -1,0 +1,6 @@
+{
+  "name": "uji-jaringan",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Uji kecepatan jaringan (ping, unduh, unggah) - UI purple minimalist untuk Vercel"
+}
