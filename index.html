@@ -373,16 +373,19 @@
     }
 
     async function measurePing(){
-      const rounds = 8;
+      const rounds = 12;
       const samples = [];
       for (let i = 0; i < rounds; i++){
         const t0 = performance.now();
         await fetch('/api/ping?_=' + Date.now(), { cache: 'no-store' });
         const t1 = performance.now();
-        if (i >= 2) samples.push(t1 - t0); // buang sampel pemanasan koneksi
+        if (i >= 4) samples.push(t1 - t0); // buang sampel pemanasan koneksi
       }
       samples.sort((a, b) => a - b);
-      return samples.reduce((a, b) => a + b, 0) / samples.length;
+      // pakai median dari sampel tengah, lebih tahan terhadap lonjakan acak
+      const mid = Math.floor(samples.length / 2);
+      const core = samples.slice(1, samples.length - 1); // buang nilai terendah & tertinggi
+      return core.reduce((a, b) => a + b, 0) / core.length;
     }
 
     async function measureDownload(){
