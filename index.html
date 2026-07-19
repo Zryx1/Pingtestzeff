@@ -10,16 +10,16 @@
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@500;600&display=swap" rel="stylesheet" />
 <style>
   :root{
-    --bg: #F7F5FC;
-    --bg-card: #FFFFFF;
-    --ink: #1F1233;
-    --ink-soft: #6B5B85;
-    --accent: #7C3AED;
-    --accent-deep: #5B21B6;
-    --accent-soft: #A78BFA;
-    --accent-pale: #EDE7FB;
-    --line: #E4DEF5;
-    --radius: 20px;
+    --bg: #07060B;
+    --card: rgba(255,255,255,0.035);
+    --card-line: rgba(168,85,247,0.22);
+    --ink: #F3EEFF;
+    --ink-soft: #9A8FBF;
+    --ink-faint: #675C87;
+    --accent: #A855F7;
+    --accent-2: #7C3AED;
+    --accent-glow: #C084FC;
+    --radius: 22px;
   }
 
   *{ box-sizing: border-box; }
@@ -34,12 +34,34 @@
     overflow-x: hidden;
   }
 
-  .noise-bg{
+  /* --- ambient glow orbs --- */
+  .glow{
+    position: fixed;
+    border-radius: 50%;
+    filter: blur(90px);
+    pointer-events: none;
+    z-index: 0;
+  }
+  .glow-a{
+    width: 520px; height: 520px;
+    top: -180px; left: -120px;
+    background: radial-gradient(circle, rgba(124,58,237,0.45), transparent 70%);
+    animation: drift1 16s ease-in-out infinite alternate;
+  }
+  .glow-b{
+    width: 420px; height: 420px;
+    bottom: -160px; right: -100px;
+    background: radial-gradient(circle, rgba(168,85,247,0.35), transparent 70%);
+    animation: drift2 18s ease-in-out infinite alternate;
+  }
+  @keyframes drift1{ to{ transform: translate(40px, 30px); } }
+  @keyframes drift2{ to{ transform: translate(-30px, -40px); } }
+
+  .grain{
     position: fixed;
     inset: 0;
-    background-image: radial-gradient(var(--line) 1px, transparent 1px);
-    background-size: 28px 28px;
-    opacity: 0.6;
+    background-image: radial-gradient(rgba(255,255,255,0.035) 1px, transparent 1px);
+    background-size: 26px 26px;
     pointer-events: none;
     z-index: 0;
   }
@@ -47,9 +69,9 @@
   main{
     position: relative;
     z-index: 1;
-    max-width: 720px;
+    max-width: 760px;
     margin: 0 auto;
-    padding: 72px 24px 48px;
+    padding: 72px 24px 56px;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -60,7 +82,7 @@
     font-family: 'IBM Plex Mono', monospace;
     font-size: 12px;
     letter-spacing: 0.14em;
-    color: var(--accent);
+    color: var(--accent-glow);
     font-weight: 600;
   }
 
@@ -75,23 +97,35 @@
   .sub{
     color: var(--ink-soft);
     font-size: 15px;
-    max-width: 420px;
-    margin: 0 0 48px;
+    max-width: 440px;
+    margin: 0 0 52px;
     line-height: 1.55;
   }
 
-  .pulse-wrap{
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 16px;
-    margin-bottom: 56px;
+  section.panel{
+    width: 100%;
+    background: linear-gradient(160deg, rgba(255,255,255,0.045), rgba(255,255,255,0.01));
+    border: 1px solid var(--card-line);
+    border-radius: var(--radius);
+    box-shadow: 0 20px 60px rgba(0,0,0,0.55), inset 0 0 40px rgba(124,58,237,0.06);
+    backdrop-filter: blur(18px);
+    padding: 36px 28px 30px;
+    margin-bottom: 24px;
   }
 
+  .panel-title{
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.16em;
+    color: var(--ink-faint);
+    margin-bottom: 22px;
+  }
+
+  /* --- ping panel --- */
   .pulse-btn{
     position: relative;
-    width: 148px;
-    height: 148px;
+    width: 128px;
+    height: 128px;
     border-radius: 50%;
     border: none;
     background: transparent;
@@ -101,179 +135,242 @@
     justify-content: center;
     padding: 0;
     font: inherit;
+    margin: 0 auto 22px;
   }
 
   .pulse-core{
     position: relative;
     z-index: 2;
-    width: 120px;
-    height: 120px;
+    width: 104px;
+    height: 104px;
     border-radius: 50%;
-    background: linear-gradient(155deg, var(--accent), var(--accent-deep));
+    background: linear-gradient(155deg, var(--accent), var(--accent-2));
     color: #fff;
     display: flex;
     align-items: center;
     justify-content: center;
     font-family: 'Space Grotesk', sans-serif;
     font-weight: 600;
-    font-size: 15px;
-    box-shadow: 0 12px 32px rgba(124, 58, 237, 0.35);
+    font-size: 14px;
+    box-shadow: 0 0 0 1px rgba(192,132,252,0.4), 0 14px 36px rgba(124,58,237,0.5);
     transition: transform 0.2s ease;
   }
 
-  .pulse-btn:hover .pulse-core{ transform: scale(1.04); }
+  .pulse-btn:hover .pulse-core{ transform: scale(1.05); }
   .pulse-btn:active .pulse-core{ transform: scale(0.97); }
   .pulse-btn:disabled{ cursor: progress; }
-  .pulse-btn:focus-visible .pulse-core{ outline: 2px solid var(--accent-deep); outline-offset: 3px; }
+  .pulse-btn:focus-visible .pulse-core{ outline: 2px solid var(--accent-glow); outline-offset: 4px; }
 
   .pulse-ring{
     position: absolute;
     inset: 0;
     border-radius: 50%;
-    border: 1.5px solid var(--accent-soft);
+    border: 1.5px solid var(--accent-glow);
     opacity: 0;
   }
-
   .pulse-btn.running .pulse-ring{ animation: pulseOut 1.8s ease-out infinite; }
   .pulse-btn.running .r2{ animation-delay: 0.6s; }
 
   @keyframes pulseOut{
     0%   { transform: scale(0.8); opacity: 0.6; }
-    100% { transform: scale(1.7); opacity: 0; }
+    100% { transform: scale(1.75); opacity: 0; }
   }
+
+  .ping-readout{
+    font-family: 'IBM Plex Mono', monospace;
+    font-weight: 600;
+    font-size: 40px;
+    color: var(--ink);
+    text-shadow: 0 0 22px rgba(168,85,247,0.55);
+    display: flex;
+    align-items: baseline;
+    justify-content: center;
+    gap: 6px;
+  }
+  .ping-readout .unit{ font-size: 15px; color: var(--ink-soft); text-shadow: none; font-weight: 500; }
 
   .status-text{
     font-family: 'IBM Plex Mono', monospace;
     font-size: 13px;
     color: var(--ink-soft);
     min-height: 16px;
+    margin: 14px 0 4px;
   }
 
-  .stats{
+  .bar{
+    width: 220px;
+    height: 5px;
+    margin: 14px auto 0;
+    background: rgba(168,85,247,0.14);
+    border-radius: 3px;
+    overflow: hidden;
+  }
+  .bar-fill{
+    height: 100%;
+    width: 4%;
+    background: linear-gradient(90deg, var(--accent-2), var(--accent-glow));
+    box-shadow: 0 0 10px rgba(192,132,252,0.6);
+    border-radius: 3px;
+    transition: width 0.6s ease;
+  }
+
+  .timestamp{
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px;
+    color: var(--ink-faint);
+    margin-top: 14px;
+  }
+
+  /* --- speed panel --- */
+  .speed-btn{
+    font-family: 'Space Grotesk', sans-serif;
+    font-weight: 600;
+    font-size: 14px;
+    color: #fff;
+    background: linear-gradient(135deg, var(--accent), var(--accent-2));
+    border: none;
+    border-radius: 999px;
+    padding: 13px 30px;
+    cursor: pointer;
+    box-shadow: 0 0 0 1px rgba(192,132,252,0.4), 0 12px 30px rgba(124,58,237,0.45);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    margin-bottom: 26px;
+  }
+  .speed-btn:hover{ transform: translateY(-1px); box-shadow: 0 0 0 1px rgba(192,132,252,0.55), 0 16px 36px rgba(124,58,237,0.55); }
+  .speed-btn:active{ transform: translateY(0); }
+  .speed-btn:disabled{ cursor: progress; opacity: 0.75; }
+  .speed-btn:focus-visible{ outline: 2px solid var(--accent-glow); outline-offset: 3px; }
+
+  .speed-grid{
     display: grid;
-    grid-template-columns: repeat(3, 1fr);
+    grid-template-columns: 1fr 1fr;
     gap: 16px;
-    width: 100%;
   }
 
-  .stat-card{
-    background: var(--bg-card);
-    border: 1px solid var(--line);
-    border-radius: var(--radius);
-    padding: 22px 14px;
+  .speed-card{
+    background: rgba(255,255,255,0.03);
+    border: 1px solid rgba(168,85,247,0.16);
+    border-radius: 16px;
+    padding: 20px 14px;
     display: flex;
     flex-direction: column;
     align-items: center;
     gap: 10px;
   }
 
-  .stat-label{
+  .speed-label{
     font-family: 'IBM Plex Mono', monospace;
     font-size: 11px;
     letter-spacing: 0.12em;
-    color: var(--ink-soft);
+    color: var(--ink-faint);
   }
 
-  .stat-value{
+  .speed-value{
     font-family: 'IBM Plex Mono', monospace;
     font-weight: 600;
     font-size: 26px;
     color: var(--ink);
+    text-shadow: 0 0 18px rgba(168,85,247,0.45);
     display: flex;
     align-items: baseline;
     gap: 4px;
   }
+  .speed-value .unit{ font-size: 12px; color: var(--ink-soft); text-shadow: none; font-weight: 500; }
 
-  .stat-value .unit{
-    font-size: 12px;
-    color: var(--ink-soft);
-    font-weight: 500;
-  }
-
-  .stat-bar{
+  .speed-bar{
     width: 100%;
     height: 5px;
-    background: var(--accent-pale);
+    background: rgba(168,85,247,0.14);
     border-radius: 3px;
     overflow: hidden;
   }
 
-  .stat-fill{
-    height: 100%;
-    width: 4%;
-    background: linear-gradient(90deg, var(--accent-soft), var(--accent));
-    border-radius: 3px;
-    transition: width 0.6s ease;
-  }
-
-  footer{
-    margin-top: 40px;
+  footer.page-footer{
+    margin-top: 8px;
     font-family: 'IBM Plex Mono', monospace;
-    font-size: 12px;
-    color: var(--ink-soft);
+    font-size: 11px;
+    color: var(--ink-faint);
   }
 
   @media (max-width: 560px){
-    .stats{ grid-template-columns: 1fr; }
+    .speed-grid{ grid-template-columns: 1fr; }
     main{ padding-top: 56px; }
+    section.panel{ padding: 30px 20px 26px; }
   }
 
   @media (prefers-reduced-motion: reduce){
     .pulse-btn.running .pulse-ring{ animation: none; }
-    .stat-fill{ transition: none; }
+    .bar-fill, .speed-fill{ transition: none; }
+    .glow-a, .glow-b{ animation: none; }
   }
 </style>
 </head>
 <body>
-  <div class="noise-bg" aria-hidden="true"></div>
+  <div class="glow glow-a" aria-hidden="true"></div>
+  <div class="glow glow-b" aria-hidden="true"></div>
+  <div class="grain" aria-hidden="true"></div>
 
   <main>
     <span class="eyebrow">JARINGAN · DIAGNOSTIK</span>
     <h1>Uji Kecepatan Jaringan</h1>
-    <p class="sub">Ukur ping, kecepatan unduh, dan unggah kamu langsung dari browser — tanpa instalasi apa pun.</p>
+    <p class="sub">Ukur latensi dan kecepatan transfer koneksi kamu, langsung dari browser — tanpa instalasi apa pun.</p>
 
-    <section class="pulse-wrap">
-      <button id="startBtn" class="pulse-btn" aria-label="Mulai uji jaringan">
+    <!-- PANEL PING (terpisah) -->
+    <section class="panel">
+      <div class="panel-title">LATENSI</div>
+
+      <button id="pingBtn" class="pulse-btn" aria-label="Mulai uji ping">
         <span class="pulse-ring r1" aria-hidden="true"></span>
         <span class="pulse-ring r2" aria-hidden="true"></span>
         <span class="pulse-core">
-          <span id="btnLabel">Mulai Uji</span>
+          <span id="pingBtnLabel">Uji Ping</span>
         </span>
       </button>
-      <p id="statusText" class="status-text">Tekan untuk memulai</p>
+
+      <div class="ping-readout"><span id="pingValue">--</span><span class="unit">ms</span></div>
+      <p id="pingStatus" class="status-text">Tekan untuk mengukur latensi</p>
+      <div class="bar"><div class="bar-fill" id="pingFill"></div></div>
+      <div class="timestamp" id="pingTimestamp">Belum ada pengujian</div>
     </section>
 
-    <section class="stats">
-      <div class="stat-card">
-        <span class="stat-label">PING</span>
-        <span class="stat-value"><span id="pingValue">--</span><span class="unit">ms</span></span>
-        <div class="stat-bar"><div class="stat-fill" id="pingFill"></div></div>
+    <!-- PANEL KECEPATAN (unduh + unggah) -->
+    <section class="panel">
+      <div class="panel-title">KECEPATAN TRANSFER</div>
+
+      <button id="speedBtn" class="speed-btn">Uji Kecepatan</button>
+      <p id="speedStatus" class="status-text" style="margin-top:-14px; margin-bottom:22px;">Tekan untuk mengukur unduh &amp; unggah</p>
+
+      <div class="speed-grid">
+        <div class="speed-card">
+          <span class="speed-label">UNDUH</span>
+          <span class="speed-value"><span id="downValue">--</span><span class="unit">Mbps</span></span>
+          <div class="speed-bar"><div class="bar-fill" id="downFill"></div></div>
+        </div>
+        <div class="speed-card">
+          <span class="speed-label">UNGGAH</span>
+          <span class="speed-value"><span id="upValue">--</span><span class="unit">Mbps</span></span>
+          <div class="speed-bar"><div class="bar-fill" id="upFill"></div></div>
+        </div>
       </div>
-      <div class="stat-card">
-        <span class="stat-label">UNDUH</span>
-        <span class="stat-value"><span id="downValue">--</span><span class="unit">Mbps</span></span>
-        <div class="stat-bar"><div class="stat-fill" id="downFill"></div></div>
-      </div>
-      <div class="stat-card">
-        <span class="stat-label">UNGGAH</span>
-        <span class="stat-value"><span id="upValue">--</span><span class="unit">Mbps</span></span>
-        <div class="stat-bar"><div class="stat-fill" id="upFill"></div></div>
-      </div>
+
+      <div class="timestamp" id="speedTimestamp">Belum ada pengujian</div>
     </section>
 
-    <footer>
-      <span id="lastTest">Belum ada pengujian</span>
-    </footer>
+    <footer class="page-footer">Dijalankan sepenuhnya di browser kamu · tidak ada data yang disimpan</footer>
   </main>
 
   <script>
     const $ = (id) => document.getElementById(id);
-    const startBtn = $('startBtn');
-    const statusText = $('statusText');
-    const btnLabel = $('btnLabel');
+    const pingBtn = $('pingBtn');
+    const speedBtn = $('speedBtn');
 
-    function setStatus(text){ statusText.textContent = text; }
     function setFill(el, percent){ el.style.width = Math.min(Math.max(percent, 4), 100) + '%'; }
+    function now(){ return new Date().toLocaleString('id-ID'); }
+
+    function setBusy(busy){
+      pingBtn.disabled = busy;
+      speedBtn.disabled = busy;
+    }
 
     async function measurePing(){
       const rounds = 8;
@@ -323,47 +420,62 @@
       });
     }
 
-    async function runTest(){
-      startBtn.disabled = true;
-      startBtn.classList.add('running');
-      btnLabel.textContent = 'Menguji…';
-
+    async function runPingTest(){
+      setBusy(true);
+      pingBtn.classList.add('running');
+      $('pingBtnLabel').textContent = '...';
       $('pingValue').textContent = '--';
+      setFill($('pingFill'), 4);
+      $('pingStatus').textContent = 'Mengukur latensi…';
+
+      try {
+        const ping = await measurePing();
+        $('pingValue').textContent = ping.toFixed(0);
+        setFill($('pingFill'), 100 - Math.min(ping / 1.5, 100));
+        $('pingStatus').textContent = 'Selesai';
+        $('pingTimestamp').textContent = 'Terakhir diuji: ' + now();
+      } catch (err){
+        $('pingStatus').textContent = 'Terjadi kesalahan, coba lagi.';
+        console.error(err);
+      } finally {
+        pingBtn.classList.remove('running');
+        $('pingBtnLabel').textContent = 'Uji Ping';
+        setBusy(false);
+      }
+    }
+
+    async function runSpeedTest(){
+      setBusy(true);
+      speedBtn.textContent = 'Menguji…';
       $('downValue').textContent = '--';
       $('upValue').textContent = '--';
-      setFill($('pingFill'), 4);
       setFill($('downFill'), 4);
       setFill($('upFill'), 4);
 
       try {
-        setStatus('Mengukur ping…');
-        const ping = await measurePing();
-        $('pingValue').textContent = ping.toFixed(0);
-        setFill($('pingFill'), 100 - Math.min(ping / 1.5, 100));
-
-        setStatus('Mengukur kecepatan unduh…');
+        $('speedStatus').textContent = 'Mengukur kecepatan unduh…';
         const down = await measureDownload();
         $('downValue').textContent = down.toFixed(1);
         setFill($('downFill'), Math.min(down / 2, 100));
 
-        setStatus('Mengukur kecepatan unggah…');
+        $('speedStatus').textContent = 'Mengukur kecepatan unggah…';
         const up = await measureUpload();
         $('upValue').textContent = up.toFixed(1);
         setFill($('upFill'), Math.min(up, 100));
 
-        setStatus('Pengujian selesai');
-        $('lastTest').textContent = 'Uji terakhir: ' + new Date().toLocaleString('id-ID');
+        $('speedStatus').textContent = 'Selesai';
+        $('speedTimestamp').textContent = 'Terakhir diuji: ' + now();
       } catch (err){
-        setStatus('Terjadi kesalahan, coba lagi.');
+        $('speedStatus').textContent = 'Terjadi kesalahan, coba lagi.';
         console.error(err);
       } finally {
-        startBtn.disabled = false;
-        startBtn.classList.remove('running');
-        btnLabel.textContent = 'Uji Lagi';
+        speedBtn.textContent = 'Uji Lagi';
+        setBusy(false);
       }
     }
 
-    startBtn.addEventListener('click', runTest);
+    pingBtn.addEventListener('click', runPingTest);
+    speedBtn.addEventListener('click', runSpeedTest);
   </script>
 </body>
 </html>
